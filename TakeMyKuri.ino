@@ -1,3 +1,63 @@
+/*The following character is owned by Nagano and assosiate companies. 
+  Tend KuriManju is a tomogachii like game. 
+  Gameplay 
+    Stage: Kuri will age over time. This is the durations
+        - egg: 0-1 hrs
+        - baby: 24hhrs 
+        - teen: 48h hrs 
+        - Adult: 7 days
+        -Old Man Kurimanju: 10 days. Kurimaju will suffer a heart attack the 20th day due to his unhealthy drinking habbits
+
+    Age: Age is the measure of ammount of days lived. 
+
+    Health: Kuris health will drop for the following reasons
+        - He is Unhappy AND Hungry (both equal 0)
+        - He has more than three poops.
+        - He is sick
+
+    Hunger: Kurimanjus hunger decreases based on age
+        -Egg: egg dont eat
+        -Baby: every 10 min
+        -Child: every 30 min
+        -Teen: every 45 min
+        -Adult: every hr
+        -Old Man Kuri: Every hr
+
+    Happyness Kurimanjus Happyness decreases based on age
+        -Egg: egg can't experience
+        -Baby: every 10 min
+        -Child: every 20 min
+        -Teen: every 30 min
+        -Adult: every 40h min
+        -Old Man Kuri: 50 minr
+    Sick: Sickness brings down health based on age
+        -Egg: egg can't get sick
+        -Baby: every 5 min
+        -Child: every 10 min
+        -Teen: every 15 min
+        -Adult: every 20
+        -Old Man Kuri: 15
+
+    POOP/dirty: Kurimanjus poops based on age, 1 poop is 25 points of dirty
+        -Egg: egg don't poop
+        -Baby: every 5 min it has a 50/50 of poopin
+        -All other stages: Every 30 min it has a 50/50 to poop
+
+  Tabs:
+
+    Shop: you can shop for the following supplies
+        -Tacos: Restores hunger
+        -Beer: Restores hunger, restores happiness, but brings down health
+        -VapoRab: reduces sickness (doesn't cure it
+        -Medicine: medicine has a 50/50 chance at curing kuri. It takes effect 30 minutes after applied. 
+
+    Save: Saves game! Do this before turning off!
+
+    Shower: Deletes poops
+
+    Games!: You can play Flappybird, slot machine, black jack, pong! 
+*/
+
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -21,8 +81,8 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
     unsigned int hunger; //EEPROM 4,5
     unsigned int happy; //EEPROM 6,7 -heheh funny number
     unsigned int money; //EEPROM 8,9
-    bool sick;  //EEPROM 10
-    bool dirty; ////EEPROM 11
+    unsigned int sick;  //EEPROM 10,11
+    unsigned int dirty; ////EEPROM 12,13
   };
   struct kuri child;
 
@@ -36,8 +96,6 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
   unsigned int days = 0;
 
   //Gameplay
-  
-
   // Logic------------------------------
   int buttonPins[3] = {2,3,4};
   int currentState[3];
@@ -61,7 +119,7 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
   
   void clearMemory(){
-    struct kuri empty = {1, 100, 100, 100, 0, false, false};
+    struct kuri empty = {1, 100, 100, 100, 0, 0, 0};
     EEPROM.put(0, empty);
   }
 
@@ -79,6 +137,10 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
     Serial.println(child.happy);
     Serial.print("Money: ");
     Serial.println(child.money);
+    Serial.print("Sick: ");
+    Serial.println(child.sick);
+    Serial.print("Dirty: ");
+    Serial.println(child.dirty);
     Serial.println("---------------------------------------------");
     Serial.println("Total Time Elapsed!");
     Serial.print("Days: ");
