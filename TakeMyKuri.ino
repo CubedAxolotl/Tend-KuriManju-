@@ -15,25 +15,28 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
   |___/\__,_/_/\__,_/\___/____/  */
 
   // character-------------------------------
-  struct kuri {
-  unsigned int thirst = 0;// max 100 . using eeprom 0
-  unsigned int age = 0; //max 50. using eeprom 1
-  unsigned int health = 0; // max 100. using eeprom 2
-  unsigned int hunger = 0; // max 100. using eeprom 3
-  unsigned int happy = 0; //max 100. using eeprom 4
-  unsigned int money = 0; //max 999. Using eeprom.get it uses 5,6
+   struct kuri {
+    unsigned int age; //EEPROM 0,1
+    unsigned int health; //EEPROM 2,3
+    unsigned int hunger; //EEPROM 4,5
+    unsigned int happy; //EEPROM 6,7 -heheh funny number
+    unsigned int money; //EEPROM 8,9
+    bool sick;  //EEPROM 10
+    bool dirty; ////EEPROM 11
   };
-  
   struct kuri child;
 
   // Timing --------------------------------
   unsigned long startTime = 0;
   unsigned long elapsedTime = 0;
   unsigned long lastSecondMark=0;
-  unsigned int seconds =0; //Using eeprom 7
-  unsigned int minutes = 0; //Using eeprom 8
-  unsigned int hours = 0; //Using eeprom 9
-  unsigned int days = 0; //Using eeprom 10
+  unsigned int seconds =0; 
+  unsigned int minutes = 0; 
+  unsigned int hours = 0; 
+  unsigned int days = 0;
+
+  //Gameplay
+  s
 
   // Logic------------------------------
   int buttonPins[3] = {2,3,4};
@@ -51,42 +54,21 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
   |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/*/
 
   //Memory-------------------------------
-  void clearMemory(){
-    EEPROM.update(0, 100);//thirst
-    EEPROM.update(1, 1);// age
-    EEPROM.update(2, 100);//health
-    EEPROM.update(3, 100);//hunger
-    EEPROM.update(4, 100);//happy
-    EEPROM.put(5, 0); //sets 5: 0x00 and 6: 0x00 money
-    EEPROM.update(7, 0);// seconds
-    EEPROM.update(8, 0);// minutes
-    EEPROM.update(9, 0);// hours
-    EEPROM.update(10, 0);// days
- 
-  }
 
   void loadStats(){
-    child.thirst = EEPROM.read(0);
-    child.age = EEPROM.read(1);
-    child.health = EEPROM.read(2);
-    child.hunger = EEPROM.read(3);
-    child.happy = EEPROM.read(4);
+    EEPROM.get(0,child);
+  }
 
-    EEPROM.get(5,child.money);
-
-    //Also Load time elapsed
-    seconds = EEPROM.read(7);
-    minutes = EEPROM.read(8);
-    hours = EEPROM.read(9);
-    days = EEPROM.read(10);
+  
+  void clearMemory(){
+    struct kuri empty = {1, 100, 100, 100, 0, false, false};
+    EEPROM.put(0, empty);
   }
 
 //Debug------------------------------
 
   void printStats(){
     Serial.println("Stats!");
-    Serial.print("Thirst: ");
-    Serial.println(child.thirst);
     Serial.print("Age: ");
     Serial.println(child.age);
     Serial.print("Health: ");
@@ -119,24 +101,20 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
     if (now - lastSecondMark >= 1000.0){ //Updates seconds
         lastSecondMark += 1000; 
         seconds++;
-        EEPROM.update(7, seconds);
         printStats();
       }
 
     if (seconds==60){ //updates minutes
       seconds=0;
       minutes++;
-      EEPROM.update(8, minutes);
     }
     if (minutes==60){ //updates hours
       minutes=0;
       hours++;
-      EEPROM.update(9, hours);
     }
     if (hours==24){ //updates days
       hours=0;
       days++;
-      EEPROM.update(10, hours);
     }
   }
 
