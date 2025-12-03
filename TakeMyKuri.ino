@@ -36,7 +36,7 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
   unsigned int days = 0;
 
   //Gameplay
-  s
+  
 
   // Logic------------------------------
   int buttonPins[3] = {2,3,4};
