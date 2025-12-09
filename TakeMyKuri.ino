@@ -1,12 +1,12 @@
 /*The following character is owned by Nagano and assosiate companies. 
-  Tend KuriManju is a tomogachii like game. 
+  Tend KuriManju is a tamagotchi like game. 
   Gameplay 
     Stage: Kuri will age over time. This is the durations
-        - egg: 0-1 hrs
-        - baby: 24hhrs 
-        - teen: 48h hrs 
-        - Adult: 7 days
-        -Old Man Kurimanju: 10 days. Kurimaju will suffer a heart attack the 20th day due to his unhealthy drinking habbits
+        - egg: 0-1 hrs ('E')
+        - baby: 24hhrs ('B')
+        - teen: 48h hrs ('T')
+        - Adult: 7 days ('A')
+        -Old Man Kurimanju: 10 days. Kurimaju will suffer a heart attack the 20th day due to his unhealthy drinking habbits ('O')
 
     Age: Age is the measure of ammount of days lived. 
 
@@ -16,7 +16,7 @@
         - He is sick
 
     Hunger: Kurimanjus hunger decreases based on age
-        -Egg: egg dont eat
+        -Egg: every 5 min
         -Baby: every 10 min
         -Child: every 30 min
         -Teen: every 45 min
@@ -24,14 +24,14 @@
         -Old Man Kuri: Every hr
 
     Happyness Kurimanjus Happyness decreases based on age
-        -Egg: egg can't experience
+        -Egg: every 5 min
         -Baby: every 10 min
         -Child: every 20 min
         -Teen: every 30 min
         -Adult: every 40h min
         -Old Man Kuri: 50 minr
     Sick: Sickness brings down health based on age
-        -Egg: egg can't get sick
+        -Egg: egg can't get sick(✓)
         -Baby: every 5 min
         -Child: every 10 min
         -Teen: every 15 min
@@ -39,7 +39,7 @@
         -Old Man Kuri: 15
 
     POOP/dirty: Kurimanjus poops based on age, 1 poop is 25 points of dirty
-        -Egg: egg don't poop
+        -Egg: egg don't poop(✓)
         -Baby: every 5 min it has a 50/50 of poopin
         -All other stages: Every 30 min it has a 50/50 to poop
 
@@ -76,24 +76,30 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
   // character-------------------------------
    struct kuri {
-    unsigned int age; //EEPROM 0,1
-    unsigned int health; //EEPROM 2,3
-    unsigned int hunger; //EEPROM 4,5
-    unsigned int happy; //EEPROM 6,7 -heheh funny number
-    unsigned int money; //EEPROM 8,9
-    unsigned int sick;  //EEPROM 10,11
-    unsigned int dirty; ////EEPROM 12,13
+    char stage;//EEPROM 0,1
+    unsigned int age; //EEPROM 2,3
+    unsigned int health; //EEPROM 4,5
+    unsigned int hunger; //EEPROM 6,7 -heheh funny number
+    unsigned int happy; //EEPROM 8,9
+    unsigned int money; //EEPROM 10,11
+    unsigned int sick;  //EEPROM 12,13
+    unsigned int dirty; //EEPROM 14,15
   };
   struct kuri child;
 
   // Timing --------------------------------
-  unsigned long startTime = 0;
-  unsigned long elapsedTime = 0;
-  unsigned long lastSecondMark=0;
-  unsigned int seconds =0; 
-  unsigned int minutes = 0; 
-  unsigned int hours = 0; 
-  unsigned int days = 0;
+  //used for clk()
+    unsigned long startTime = 0;
+    unsigned long elapsedTime = 0;
+    unsigned long lastSecondMark=0;
+    unsigned int seconds =55; 
+    unsigned int minutes = 9; 
+    unsigned int hours = 0; 
+    unsigned int days = 0;
+
+  // Used for Decay
+    bool decayedHunger = false;
+    bool decayedHappyness = false;
 
   //Gameplay
   // Logic------------------------------
@@ -119,7 +125,7 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
   
   void clearMemory(){
-    struct kuri empty = {1, 100, 100, 100, 0, 0, 0};
+    struct kuri empty = {'E',1, 100, 100, 100, 0, 0, 0};
     EEPROM.put(0, empty);
   }
 
@@ -127,6 +133,8 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
   void printStats(){
     Serial.println("Stats!");
+    Serial.print("Stage: ");
+    Serial.println(child.stage);
     Serial.print("Age: ");
     Serial.println(child.age);
     Serial.print("Health: ");
@@ -180,6 +188,26 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
     }
   }
 
+void decay(){
+  switch (child.stage){
+    case 'E':
+      if (decayedHunger== false && minutes%5==0){
+        decayedHunger=true;
+        child.hunger -= random(10,21); //it goes down by a random number between 10-20
+          } else if (decayedHunger==true && minutes%5!=0){
+            decayedHunger=false;
+          }
+
+      if (decayedHappyness== false && minutes%5==0){
+        decayedHappyness=true;
+        child.happy -= random(10,21); //it goes down by a random number between 10-20;
+          } else if (decayedHappyness==true && minutes%10!=0){
+            decayedHappyness=false;
+          }
+      break;
+}
+
+}
 
 void setup() {
   Serial.begin(9600);
@@ -206,8 +234,10 @@ void setup() {
     Serial.println("Button pressed during startup, clearing memory...");
     clearMemory();
     }
-
+  
+  
   loadStats();
+
 
   startTime = millis();
 
@@ -216,7 +246,6 @@ void setup() {
 
 void loop() {
   clk(); //Keeps track of sec, min, hrs, and days. 
-  
-  
+ decay();
 
 }
