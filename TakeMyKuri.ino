@@ -16,16 +16,16 @@
         - He is sick
 
     Hunger: Kurimanjus hunger decreases based on age
-        -Egg: every 5 min
-        -Baby: every 10 min
+        -Egg: every 5 min(✓)
+        -Baby: every 10 min(✓)
         -Child: every 30 min
         -Teen: every 45 min
         -Adult: every hr
         -Old Man Kuri: Every hr
 
     Happyness Kurimanjus Happyness decreases based on age
-        -Egg: every 5 min
-        -Baby: every 10 min
+        -Egg: every 5 min(✓)
+        -Baby: every 10 min(✓)
         -Child: every 20 min
         -Teen: every 30 min
         -Adult: every 40h min
@@ -38,7 +38,7 @@
         -Adult: every 20
         -Old Man Kuri: 15
 
-    POOP/dirty: Kurimanjus poops based on age, 1 poop is 25 points of dirty
+    POOP/dirty: Kurimanjus poops based on age, 1 poop is 1 point of firty with a max of 3
         -Egg: egg don't poop(✓)
         -Baby: every 5 min it has a 50/50 of poopin
         -All other stages: Every 30 min it has a 50/50 to poop
@@ -83,8 +83,9 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
     unsigned int happy; //EEPROM 8,9
     unsigned int money; //EEPROM 10,11
     unsigned int sick;  //EEPROM 12,13
-    unsigned int dirty; //EEPROM 14,15
+    unsigned int poopPoints; //EEPROM 14,15
   };
+
   struct kuri child;
 
   // Timing --------------------------------
@@ -100,6 +101,7 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
   // Used for Decay
     bool decayedHunger = false;
     bool decayedHappyness = false;
+    bool hasPooped = false;
 
   //Gameplay
   // Logic------------------------------
@@ -119,95 +121,14 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
   //Memory-------------------------------
 
-  void loadStats(){
-    EEPROM.get(0,child);
-  }
+
 
   
-  void clearMemory(){
-    struct kuri empty = {'E',1, 100, 100, 100, 0, 0, 0};
-    EEPROM.put(0, empty);
-  }
 
-//Debug------------------------------
-
-  void printStats(){
-    Serial.println("Stats!");
-    Serial.print("Stage: ");
-    Serial.println(child.stage);
-    Serial.print("Age: ");
-    Serial.println(child.age);
-    Serial.print("Health: ");
-    Serial.println(child.health);
-    Serial.print("Hunger: ");
-    Serial.println(child.hunger);
-    Serial.print("Happy: ");
-    Serial.println(child.happy);
-    Serial.print("Money: ");
-    Serial.println(child.money);
-    Serial.print("Sick: ");
-    Serial.println(child.sick);
-    Serial.print("Dirty: ");
-    Serial.println(child.dirty);
-    Serial.println("---------------------------------------------");
-    Serial.println("Total Time Elapsed!");
-    Serial.print("Days: ");
-    Serial.println(days);
-    Serial.print("Hours: ");
-    Serial.println(hours);
-    Serial.print("Minutes: ");
-    Serial.println(minutes);
-    Serial.print("Seconds: ");
-    Serial.println(seconds);
-    Serial.println("---------------------------------------------");
-    
-  }
 
   //Time-----------------------------------------
 
-  void clk(){ //Keeps track of sec, min, hrs, and days. 
-    unsigned long now = millis(); //Millis returns miliseconds passed
 
-    if (now - lastSecondMark >= 1000.0){ //Updates seconds
-        lastSecondMark += 1000; 
-        seconds++;
-        printStats();
-      }
-
-    if (seconds==60){ //updates minutes
-      seconds=0;
-      minutes++;
-    }
-    if (minutes==60){ //updates hours
-      minutes=0;
-      hours++;
-    }
-    if (hours==24){ //updates days
-      hours=0;
-      days++;
-    }
-  }
-
-void decay(){
-  switch (child.stage){
-    case 'E':
-      if (decayedHunger== false && minutes%5==0){
-        decayedHunger=true;
-        child.hunger -= random(10,21); //it goes down by a random number between 10-20
-          } else if (decayedHunger==true && minutes%5!=0){
-            decayedHunger=false;
-          }
-
-      if (decayedHappyness== false && minutes%5==0){
-        decayedHappyness=true;
-        child.happy -= random(10,21); //it goes down by a random number between 10-20;
-          } else if (decayedHappyness==true && minutes%10!=0){
-            decayedHappyness=false;
-          }
-      break;
-}
-
-}
 
 void setup() {
   Serial.begin(9600);
