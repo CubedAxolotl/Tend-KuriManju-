@@ -36,6 +36,7 @@ void decay(){
       }
     break;
     case 'B':
+      //decays Hunger
       if (decayedHunger== false && minutes%10==0){ //goes down every 10 min
         decayedHunger=true;
         deduction = random(20,31); // makes deduction a number between 20-30
@@ -52,7 +53,7 @@ void decay(){
         decayedHunger=false;
       }
 
-
+      //decays Happyness
       if (decayedHappyness== false && minutes%10==0){//goes down every 10 min
         decayedHappyness=true;
         deduction = random(20,31); //it goes down by a random number between 20-30;
@@ -67,15 +68,32 @@ void decay(){
       else if (decayedHappyness==true && minutes%10!=0){
         decayedHappyness=false;
       }
-
+      //updates poops
       if (minutes%5==0 && hasPooped == false){
-        hasPooped = true;
+        
         if (child.poopPoints !=3)
+        hasPooped = true;
         child.poopPoints +=1; //adds one poop
       }
       else if (minutes%5!=0 && hasPooped == true){
         hasPooped = false;
       }
+      //Rolls for sickness 
+      int k= 1+ 2*child.poopPoints;
+      if (minutes%2==0 && rolledSick== false ){
+        rolledSick = true;
+        if (child.isSick==false && random(50)<k){
+          child.isSick = true;
+          Serial.print("Child has the flu!");
+        }
+        
+      }
+      else if (minutes%2!=0&&rolledSick == true){
+        rolledSick = false;
+      }
+
+
+
     break;
 }
 

@@ -28,9 +28,11 @@
         -Baby: every 10 min(✓)
         -Child: every 20 min
         -Teen: every 30 min
-        -Adult: every 40h min
+        -Adult: every 40h min 
         -Old Man Kuri: 50 minr
-    Sick: Sickness brings down health based on age
+    Sick: Sickness brings down health based on age. It is calculated by 
+          (1+2*number of poops)/n, n changes value depending on age. Baby n=25, Child n=75, Adult n=100, Old Man n=76.
+          Sickness is rolled
         -Egg: egg can't get sick(✓)
         -Baby: every 5 min
         -Child: every 10 min
@@ -38,9 +40,9 @@
         -Adult: every 20
         -Old Man Kuri: 15
 
-    POOP/dirty: Kurimanjus poops based on age, 1 poop is 1 point of firty with a max of 3
+    POOP: Kurimanjus poops based on age, 1 poop is 1 point with a max of 3
         -Egg: egg don't poop(✓)
-        -Baby: every 5 min it has a 50/50 of poopin
+        -Baby: every 5 min poopin(✓)
         -All other stages: Every 30 min it has a 50/50 to poop
 
   Tabs:
@@ -82,7 +84,7 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
     unsigned int hunger; //EEPROM 6,7 -heheh funny number
     unsigned int happy; //EEPROM 8,9
     unsigned int money; //EEPROM 10,11
-    unsigned int sick;  //EEPROM 12,13
+    bool isSick;  //EEPROM 12,13//outdated
     unsigned int poopPoints; //EEPROM 14,15
   };
 
@@ -102,6 +104,7 @@ Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
     bool decayedHunger = false;
     bool decayedHappyness = false;
     bool hasPooped = false;
+    bool rolledSick= false;
 
   //Gameplay
   // Logic------------------------------

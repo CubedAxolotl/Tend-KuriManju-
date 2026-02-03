@@ -3,7 +3,7 @@
   }
  
   void clearMemory(){
-    struct kuri empty = {'B',1, 100, 9, 100, 0, 0, 0};
+    struct kuri empty = {'B',1, 100, 9, 100, 0, false, 0};
     EEPROM.put(0, empty);
   }
 
@@ -24,7 +24,7 @@
     Serial.print("Money: ");
     Serial.println(child.money);
     Serial.print("Sick: ");
-    Serial.println(child.sick);
+    Serial.println(child.isSick);
     Serial.print("Poops: ");
     Serial.println(child.poopPoints);
     Serial.println("---------------------------------------------");
